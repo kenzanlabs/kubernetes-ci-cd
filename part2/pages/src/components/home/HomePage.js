@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import homePageActions from '../../actions/homepageActions';
+import * as actions from '../../actions/puzzleActions';
 import PuzzleComponent from './PuzzleComponent';
 import InstanceComponent from './InstancesComponent';
 import DataFlowArrow from './DataFlowArrow';
-import puzzleArray from '../../../puzzle.json';
 
 class HomePage extends React.Component {
   constructor (props) {
@@ -26,11 +25,18 @@ class HomePage extends React.Component {
     this.addLetterToPuzzleArray = this.addLetterToPuzzleArray.bind(this);
     this.handleSlider = this.handleSlider.bind(this);
     this.onScale = this.onScale.bind(this);
+    this.initializePuzzleArray = this.initializePuzzleArray.bind(this);
   }
 
   componentWillMount () {
-    // iterate through json and load array. Also populate Across and Down arrays
-    this.initializePuzzleArray();
+    this.props.actions.getPuzzleData();
+  }
+
+  componentWillReceiveProps (newProps) {
+    console.log(newProps);
+    if (this.props.puzzleArray !== newProps.puzzleArray) {
+      this.initializePuzzleArray(newProps.puzzleArray);
+    }
   }
 
   handleSlider (event, value) {
@@ -64,11 +70,10 @@ class HomePage extends React.Component {
       puzzleGrid.push(new Array(maxRows).fill(''));
     }
 
-    console.log(puzzleGrid);
     return puzzleGrid;
   }
 
-  initializePuzzleArray () {
+  initializePuzzleArray (puzzleArray) {
     const downHintsArray = puzzleArray.filter((word) => {
       return (word.wordOrientation === 'down');
     });
@@ -145,18 +150,19 @@ class HomePage extends React.Component {
 HomePage.propTypes = {
   params: PropTypes.objectOf(PropTypes.string),
   actions: PropTypes.objectOf(PropTypes.func),
-  state: PropTypes.object
+  state: PropTypes.object,
+  puzzleArray: PropTypes.array
 };
 
 function mapStateToProps (state) {
   return {
-    state: state
+    puzzleArray: state.puzzle.puzzleData || []
   };
 }
 
 function mapDispatchToProps (dispatch) {
   return {
-    actions: bindActionCreators(homePageActions, dispatch)
+    actions: bindActionCreators(actions, dispatch)
   };
 }
 
