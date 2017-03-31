@@ -22,12 +22,12 @@
             "description": "The ID of the word the word",
             "required": true
           },
-          "startX": {
+          "startx": {
             "type": "number",
             "description": "The x coordinates of the starting word",
             "required": true
           },
-          "startY": {
+          "starty": {
             "type": "number",
             "description": "the y coordinate of the starting word",
             "required": true

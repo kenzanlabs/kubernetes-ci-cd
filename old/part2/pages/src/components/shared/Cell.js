@@ -1,15 +1,42 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
+import classNames from 'classnames';
 
-const Cell = ({isEmpty, positionInWord, wordNbr, letter}) => {
+function Cell (props) {
+  const cellClass = classNames({
+    cell: true,
+    isEmpty: props.isEmpty
+  });
 
-  const showWordNumber = positionInWord === 0 ? true : false
+  const currentVal = props.value === '*' ? '' : props.value;
+  const inputClass = classNames({
+    incorrect: currentVal && currentVal.toLowerCase() !== props.letter.toLowerCase()
+  });
 
   return (
-    <div className={'cell ' + isEmpty}>
-      <div className="superscript-number">{showWordNumber ? wordNbr : ''}</div>
-      <input type="text" maxLength="1" size="1" defaultValue={letter}/>
+    <div className={cellClass}>
+      <div className="superscript-number">{props.positionInWord === 0 ? props.wordNbr : ''}</div>
+      <input
+        name={props.id}
+        type="text"
+        maxLength="1"
+        size="1"
+        onChange={props.onCellInput}
+        className={inputClass}
+        value={currentVal}
+        disabled={props.isEmpty}
+      />
     </div>
   );
+}
+
+Cell.propTypes = {
+  id: PropTypes.string.isRequired,
+  isEmpty: PropTypes.bool.isRequired,
+  positionInWord: PropTypes.number,
+  wordNbr: PropTypes.number,
+  letter: PropTypes.string,
+  value: PropTypes.string,
+  onCellInput: PropTypes.func
 };
 
 export default Cell;

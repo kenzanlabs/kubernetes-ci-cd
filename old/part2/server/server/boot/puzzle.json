@@ -5,7 +5,8 @@
     "startx" : 6,
     "starty" : 0,
     "wordOrientation": "down",
-    "hint": "Our company name :-)"
+    "hint": "Our company name :-)",
+    "enteredValue": "******"
   },
   {
     "word": "Minikube",
@@ -13,7 +14,8 @@
     "startx" : 9,
     "starty" : 0,
     "wordOrientation": "down",
-    "hint": "Tool that makes it easy to run kubernetes locally"
+    "hint": "Tool that makes it easy to run kubernetes locally",
+    "enteredValue": "********"
   },
   {
     "word": "Replication",
@@ -21,7 +23,8 @@
     "startx" : 11,
     "starty" : 0,
     "wordOrientation": "down",
-    "hint": "Controller that ensures a specific number of pods are running at a given time"
+    "hint": "Controller that ensures a specific number of pods are running at a given time",
+    "enteredValue": "***********"
   },
   {
     "word": "Service",
@@ -29,7 +32,8 @@
     "startx" : 5,
     "starty" : 1,
     "wordOrientation": "across",
-    "hint": "Abstraction which defines a logical set of pods"
+    "hint": "Abstraction which defines a logical set of pods",
+    "enteredValue": "*******"
   },
   {
     "word": "Kubectl",
@@ -37,7 +41,8 @@
     "startx" : 3,
     "starty" : 4,
     "wordOrientation": "down",
-    "hint": "cli tool for running commands against Kubernetes clusters"
+    "hint": "cli tool for running commands against Kubernetes clusters",
+    "enteredValue": "*******"
   },
   {
     "word": "Deployment",
@@ -45,7 +50,8 @@
     "startx" : 2,
     "starty" : 7,
     "wordOrientation": "across",
-    "hint": "Defines declarative updates for pods and replica sets"
+    "hint": "Defines declarative updates for pods and replica sets",
+    "enteredValue": "**********"
   },
   {
     "word": "Yaml",
@@ -53,7 +59,8 @@
     "startx" : 0,
     "starty" : 10,
     "wordOrientation": "across",
-    "hint": "Configuration format other then json"
+    "hint": "Configuration format other then json",
+    "enteredValue": "****"
   },
   {
     "word": "k8",
@@ -61,6 +68,7 @@
     "startx" : 3,
     "starty" : 4,
     "wordOrientation": "across",
-    "hint": "Shorthand for Kubernetes"
+    "hint": "Shorthand for Kubernetes",
+    "enteredValue": "**"
   }
 ]

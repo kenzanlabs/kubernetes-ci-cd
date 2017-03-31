@@ -16,12 +16,16 @@
     outline: 0;
   }
 
-  &.false {
+  &.isEmpty {
     background-color: $brand-blue;
 
     input {
       background-color: $brand-blue;
     }
+  }
+
+  input.incorrect {
+    color: red;
   }
 }
 

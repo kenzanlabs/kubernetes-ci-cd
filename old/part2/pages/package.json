@@ -38,6 +38,7 @@
   "dependencies": {
     "babel-polyfill": "6.13.0",
     "chance": "1.0.4",
+    "classnames": "^2.2.5",
     "d3": "4.4.1",
     "jquery": "3.1.1",
     "js-cookie": "^2.1.3",
