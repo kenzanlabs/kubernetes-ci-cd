@@ -9,7 +9,7 @@
 
 * run `npm install`
 
-Begin the tutorial `npm start`
+Begin the desired section `npm run part1` `npm run part2` `npm run part3`
 
 ## Manual tutorial version
 
@@ -24,7 +24,7 @@ Begin the tutorial `npm start`
 
 Start up the cluster with minikibe
 
-`minikube start --memory 6000 --cpus 2 --kubernetes-version v1.6.0`
+`minikube start --memory 8000 --cpus 2 --kubernetes-version v1.6.0`
 
 ### Step2
 
@@ -129,15 +129,15 @@ Install Jenkins
 
 ### Step2
 
-Get Jenkins admin password
+Open the Jenkins service running in our cluster.  You will retrieve the admin password in the next step.
 
-`kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /root/.jenkins/secrets/initialAdminPassword`
+`minikube service jenkins`
 
 ### Step3
 
-Enter the admin password from above and choose "suggested plugins". Create a new job with type pipeline. Scroll down and under "pipeline script" choose "Pipeline script from SCM". Under SCM choose GIT. Fork repo and put "repository url" as your fork, such as https://github.com/kenzanlabs/kubernetes-ci-cd.git. Save and run the job.
+Get Jenkins admin password. Enter the admin password from above and choose "suggested plugins". Create a new job with type pipeline. Scroll down and under "pipeline script" choose "Pipeline script from SCM". Under SCM choose GIT. Fork repo and put "repository url" as your fork, such as https://github.com/kenzanlabs/kubernetes-ci-cd.git. Save and run the job.
 
-`minikube service jenkins`
+`kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /root/.jenkins/secrets/initialAdminPassword`
 
 ### Step4
 
@@ -149,10 +149,10 @@ View updated application
 
 Push a change to your fork. Run job again. View changes
 
-`minikube service hello-kenzan`## Part 4
+`minikube service hello-kenzan`## Part 3
 
 
-### Part 4
+### Part 3
 
 
 
@@ -176,54 +176,108 @@ Check job status
 
 ### Step4
 
-build kubescale image
+The crossword application is a multi-tier application and its services depend on each other.  For our first step we will create the 3 services ahead of time so that the deployments are already aware of them later.
 
-`docker build -t 127.0.0.1:30400/kubescale:latest -f applications/kubescale/Dockerfile applications/kubescale`
+`kubectl apply -f manifests/all-services.yml`
 
 ### Step5
 
-build scaling image
+Now we're going to walk through an initial build of the monitoring and scaling service for our crosswords application.
 
-`docker build -t 127.0.0.1:30400/set:latest -f applications/kubescale/set/Dockerfile applications/kubescale/set`
+`docker build -t 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD` -f applications/monitor/Dockerfile applications/monitor`
 
 ### Step6
 
-Start the registry proxy.
+Setup the proxy in order to push the monitoring docker image to our cluster's registry
 
-`docker stop socat-registry; docker rm socat-registry; docker run -d -e "REGIP=$(minikube ip)" --name socat-registry -p 30400:5000 chadmoon/socat:latest bash -c "socat TCP4-LISTEN:5000,fork,reuseaddr TCP4:$(minikube ip):30400"`
+`docker stop socat-registry; docker rm socat-registry; docker run -d -e "REGIP=`minikube ip`" --name socat-registry -p 30400:5000 chadmoon/socat:latest bash -c "socat TCP4-LISTEN:5000,fork,reuseaddr TCP4:`minikube ip`:30400"`
 
 ### Step7
 
-Push the kubescale image
+Push the image
 
-`docker push 127.0.0.1:30400/kubescale:latest`
+`docker push 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD``
 
 ### Step8
-
-Push the scaling image
-
-`docker push 127.0.0.1:30400/set:latest`
-
-### Step9
 
 Stop the registry proxy
 
 `docker stop socat-registry`
 
+### Step9
+
+Verify that the image is in our local registry using the registry-ui
+
+`minikube service registry-ui`
+
 ### Step10
 
-Deploy kubescale
+Create the deployment and service for the monitoring and scaling server and wait for it to be deployed
 
-`kubectl apply -f applications/kubescale/k8s/kubescale.yml; kubectl rollout status deployment/kubescale`
+`sed 's#127.0.0.1:30400/monitor-scale:latest#127.0.0.1:30400/monitor-scale:'`git rev-parse --short HEAD`'#' applications/monitor/k8s/monitor-scale.yaml | kubectl apply -f -`
 
 ### Step11
 
-Deploy scaling set
+Wait for the deployment to run
 
-`kubectl apply -f applications/kubescale/k8s/set.yml; kubectl rollout status deployment/set`
+`kubectl rollout status deployment/monitor-scale`
 
 ### Step12
 
-View kubescale application
+See the montior-scale-* pod running using kubectl.
 
-`minikube service kubescale`
+`kubectl get pods`
+
+### Step13
+
+See the montior-scale-* service is setup using kubectl.
+
+`kubectl get services`
+
+### Step14
+
+See the montior-scale-* ingress is configured using kubectl.
+
+`kubectl get ingress`
+
+### Step15
+
+See the monitor-scale deployment is setup using kubectl
+
+`kubectl get deployments`
+
+### Step16
+
+Now we will bootstrap the crossword/mongodb services, creating a docker image and storing it in the local registry. This script runs the same steps as before for a different service application.
+
+`scripts/server.sh`
+
+### Step17
+
+Check to see if services has been deployed
+
+`kubectl rollout status deployment/services`
+
+### Step18
+
+Bootstrap the frontend web application.  This script follows the same steps as before but
+
+`scripts/pages.sh`
+
+### Step19
+
+Check to see if the front end has been deployed
+
+`kubectl rollout status deployment/kr8sswordz`
+
+### Step20
+
+See all the pods running using kubectl.
+
+`kubectl get pods`
+
+### Step21
+
+Start the web application in your default browser
+
+`minikube service kr8sswordz`

@@ -33,6 +33,7 @@ export function getPuzzleData () {
         return dispatch(getPuzzleDataSuccess(json));
       })
       .catch(err => {
+        console.log(err);
         dispatch(getPuzzleDataFailure(err));
       });
   };
@@ -63,6 +64,7 @@ export function submitPuzzleData (id, data) {
           setTimeout(() => {
             return dispatch({type: actions.puzzle.FROM_MONGO, data: false});
           }, arrowDisplayTime);
+          console.log('action', data);
           dispatch(submitPuzzleDataSuccess(data));
         } else {
           dispatch(submitPuzzleDataFailure);
@@ -70,6 +72,25 @@ export function submitPuzzleData (id, data) {
       })
       .catch((err) => {
         dispatch(submitPuzzleDataFailure);
+      });
+  };
+}
+
+export function clearPuzzleData (id, data) {
+  return dispatch => {
+    return fetch(`${baseUrl}/crossword`, {
+      method: 'CLEAR'
+    })
+      .then((resp) => {
+        console.log(resp);
+        resp.json();
+      })
+      .then((json) => {
+        console.log(json);
+        dispatch({type: actions.puzzle.CLEAR_PUZZLE_DATA, data: json});
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 }

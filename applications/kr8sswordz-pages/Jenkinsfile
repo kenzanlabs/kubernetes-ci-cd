@@ -14,7 +14,7 @@ node {
 
     stage "Build"
     
-        sh "docker build -t ${imageName} old/part2/pages"
+        sh "docker build -t ${imageName} applications/kr8sswordz-pages"
     
     stage "Push"
 
@@ -22,5 +22,5 @@ node {
 
     stage "Deploy"
 
-        sh "sed 's#127.0.0.1:30400/kr8sswordz:latest#'$BUILDIMG'#' old/part2/pages/k8s/deployment.yaml | kubectl apply -f -"
+        sh "sed 's#127.0.0.1:30400/kr8sswordz:latest#'$BUILDIMG'#' applications/kr8sswordz-pages/k8s/deployment.yaml | kubectl apply -f -"
 }

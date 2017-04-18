@@ -1,0 +1,53 @@
+parts:
+
+  - name: Part 1
+    intro: In this part we will setup a local cluster with minikube, deploy a public image from dockerhub, customize that image, and then finally deploy it inside our local cluster.
+    steps:
+
+      - cap: Start up the cluster with minikibe
+        com: minikube start --memory 8000 --cpus 2 --kubernetes-version v1.6.0
+
+      - cap: Enable addons
+        com: minikube addons enable heapster; minikube addons enable ingress
+
+      - cap: Wait 20 seconds and view minikube dashboard
+        com: sleep 20; minikube service kubernetes-dashboard --namespace kube-system
+
+      - cap: Deploy the public nginx image from DockerHub
+        com: kubectl run nginx --image nginx --port 80
+
+      - cap: Create a service for deployment
+        com: kubectl expose deployment nginx --type NodePort --port 80
+
+      - cap: Launch browser to test service
+        com: minikube service nginx
+
+      - cap: Install registry
+        com: kubectl apply -f manifests/registry.yml
+
+      - cap: Wait for registry to deploy
+        com: kubectl rollout status deployments/registry
+
+      - cap: View registry UI
+        com: minikube service registry-ui
+
+      - cap: Edit the contents of applications/hello-kenzan/index.html. This will open the file with the nano editor. When finished press ctrl + x to exit and confirm save.
+        com: nano applications/hello-kenzan/index.html
+
+      - cap: We will now build the image with a special name that is pointing at our cluster registry.
+        com: docker build -t 127.0.0.1:30400/hello-kenzan:latest -f applications/hello-kenzan/Dockerfile applications/hello-kenzan
+
+      - cap: Before we can push our image we need to set up a temporary proxy. This is a container that listens on 127.0.0.1:30400 and forwads to our cluster. By default the docker client can only push to non https via localhost.
+        com: docker stop socat-registry; docker rm socat-registry; docker run -d -e "REGIP=`minikube ip`" --name socat-registry -p 30400:5000 chadmoon/socat:latest bash -c "socat TCP4-LISTEN:5000,fork,reuseaddr TCP4:`minikube ip`:30400"
+
+      - cap: We can now push our image.
+        com: docker push 127.0.0.1:30400/hello-kenzan:latest
+
+      - cap: Stop the registry proxy.
+        com: docker stop socat-registry;
+
+      - cap: Now that our image is on the cluster we can deploy the manifests
+        com: kubectl apply -f applications/hello-kenzan/k8s/deployment.yaml
+
+      - cap: View the app
+        com: minikube service hello-kenzan

@@ -35,8 +35,8 @@ class PuzzleComponent extends React.Component {
   }
 
   componentWillReceiveProps (newProps) {
-    if (this.props.puzzleArray !== newProps.puzzleArray) {
-      this.initializePuzzleArray(newProps.puzzleArray);
+    if (this.props.puzzleData !== newProps.puzzleData) {
+      this.initializePuzzleArray(newProps.puzzleData);
     }
   }
 
@@ -169,7 +169,7 @@ class PuzzleComponent extends React.Component {
   }
 
   convertPuzzleGridToPuzzleArray () {
-    const submission = this.props.puzzleArray.map((word) => {
+    const submission = this.props.puzzleData.map((word) => {
       const startx = word.startx;
       const starty = word.starty;
       const length = word.word.length;
@@ -209,7 +209,7 @@ class PuzzleComponent extends React.Component {
   }
 
   clearPuzzle () {
-    let submission = [...this.props.puzzleArray];
+    let submission = [...this.props.puzzleData];
     submission = submission.map(obj => {
       const letters = obj.enteredValue.length;
       obj.enteredValue = new Array(letters).fill('*').join('');
@@ -217,6 +217,7 @@ class PuzzleComponent extends React.Component {
     });
 
     this.props.puzzleActions.sendingData();
+    console.log('component', submission);
     this.props.puzzleActions.submitPuzzleData(this.props.puzzleId, submission);
   }
 
@@ -283,14 +284,14 @@ PuzzleComponent.propTypes = {
   puzzleActions: PropTypes.objectOf(PropTypes.func),
   webSocketActions: PropTypes.objectOf(PropTypes.func),
   state: PropTypes.object,
-  puzzleArray: PropTypes.array,
+  puzzleData: PropTypes.array,
   puzzleId: PropTypes.string
 };
 
 function mapStateToProps (state) {
   return {
     puzzleId: state.puzzle.id,
-    puzzleArray: state.puzzle.puzzleData
+    puzzleData: state.puzzle.puzzleData
   };
 }
 

@@ -1,0 +1,71 @@
+parts:
+
+  - name: Part 4
+    intro: In this part we will return to our Jenkins instance and setup jobs for each component of the kr8sswordz application.
+    steps:
+
+      - cap: Open the Jenkins service running in our cluster.
+        com: minikube service jenkins
+
+      - cap: Login as admin, if necessary.
+        com: echo 'Login as admin, if necessary.' 
+
+      - cap: Click "New Item" and create an item with a name like "Monitor Scale Service Pipeline", choosing the type "Pipeline". Click OK.
+        com: echo 'Click "New Item" and create an item with a name like "Monitor Scale Service Pipeline", choosing the type "Pipeline". Click OK.'
+
+      - cap: From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM". 
+        com: echo 'From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM".'
+
+      - cap: Set the SCM property to GIT. 
+        com: echo 'Set the SCM property to GIT.'
+
+      - cap: Set the "Repository URL" to your fork (created in Part 2), such as https://github.com/kenzanlabs/kubernetes-ci-cd.git.
+        com: echo 'Set the "Repository URL" to your fork (created in Part 2), such as https://github.com/kenzanlabs/kubernetes-ci-cd.git.'
+
+      - cap: Set the "Script Path" to applications/monitor/Jenkinsfile
+        com: echo 'Set the "Script Path" to applications/monitor/Jenkinsfile'
+
+      - cap: Save and run the job using the "Build Now" button.
+        com: echo 'Save and run the job using the "Build Now" button.'
+
+      - cap: Click "New Item" and create an item with a name like "Puzzle Service Pipeline", choosing the type "Pipeline". Click OK.
+        com: echo 'Click "New Item" and create an item with a name like "Puzzle Service Pipeline", choosing the type "Pipeline". Click OK.'
+
+      - cap: From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM". 
+        com: echo 'From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM".'
+
+      - cap: Set the SCM property to GIT. 
+        com: echo 'Set the SCM property to GIT.'
+
+      - cap: Set the "Repository URL" to your fork (created in Part 2), such as https://github.com/kenzanlabs/kubernetes-ci-cd.git.
+        com: echo 'Set the "Repository URL" to your fork (created in Part 2), such as https://github.com/kenzanlabs/kubernetes-ci-cd.git.'
+
+      - cap: Set the "Script Path" to applications/crossword/Jenkinsfile
+        com: echo 'Set the "Script Path" to applications/crossword/Jenkinsfile'
+
+      - cap: Save and run the job using the "Build Now" button.
+        com: echo 'Save and run the job using the "Build Now" button.'
+
+      - cap: Click "New Item" and create an item with a name like "kr8sswordz FrontEnd Pipeline", choosing the type "Pipeline". Click OK.
+        com: echo 'Click "New Item" and create an item with a name like "kr8sswordz FrontEnd Pipeline", choosing the type "Pipeline". Click OK.'
+
+      - cap: From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM". 
+        com: echo 'From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM".'
+
+      - cap: Set the SCM property to GIT. 
+        com: echo 'Set the SCM property to GIT.'
+
+      - cap: Set the "Repository URL" to your fork (created in Part 2), such as https://github.com/kenzanlabs/kubernetes-ci-cd.git.
+        com: echo 'Set the "Repository URL" to your fork (created in Part 2), such as https://github.com/kenzanlabs/kubernetes-ci-cd.git.'
+
+      - cap: Set the "Script Path" to applications/kr8sswordz-pages/Jenkinsfile
+        com: echo 'Set the "Script Path" to applications/kr8sswordz-pages/Jenkinsfile'
+
+      - cap: Save and run the job using the "Build Now" button.
+        com: echo 'Save and run the job using the "Build Now" button.'
+
+      - cap: View updated application
+        com: minikube service kr8sswordz
+
+      - cap: Push a change to your fork TODO. Run job again. View changes
+        com: minikube service kr8sswordz

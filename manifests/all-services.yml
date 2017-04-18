@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitor-scale
+  labels:
+    app: monitor-scale
+spec:
+  ports:
+    - port: 3001
+      targetPort: 3001
+  selector:
+    app: monitor-scale
+    tier: monitor-scale
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: services
+  labels:
+    app: services
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: services
+    tier: services
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kr8sswordz
+  labels:
+    app: kr8sswordz
+spec:
+  ports:
+    - port: 80
+      targetPort: 3002
+  selector:
+    app: kr8sswordz
+    tier: kr8sswordz
+  type: NodePort

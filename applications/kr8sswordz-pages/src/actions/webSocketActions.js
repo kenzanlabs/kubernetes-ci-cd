@@ -103,10 +103,5 @@ export function submitConsecutiveRequests (count) {
 function concatServiceName (name) {
   const parts = name.split('/');
   const serviceName = parts[parts.length - 1];
-
-  if (serviceName.startsWith('services-')) {
-    return serviceName.substring(9);
-  } else {
-    return serviceName;
-  }
+  return serviceName;
 }

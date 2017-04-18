@@ -1,0 +1,68 @@
+parts:
+
+  - name: Part 3
+    intro: This part will have us setup the various applications that will present the crossword puzzle.  We will run a sample etcd cluster as a cache, a pages application containing the front-end, a crossword server using mongodb, and a monitoring and scaling server application. 
+    steps:
+
+      - cap: Bootstrap etcd operator on the cluster
+        com: scripts/etcd.sh
+
+      - cap: Run job to create etcd directory
+        com: kubectl create -f manifests/etcd-job.yml
+
+      - cap: Check job status
+        com: kubectl describe jobs/etcd-job
+      
+      - cap: The crossword application is a multi-tier application and its services depend on each other.  For our first step we will create the 3 services ahead of time so that the deployments are already aware of them later.
+        com: kubectl apply -f manifests/all-services.yml
+      
+      - cap: Now we're going to walk through an initial build of the monitoring and scaling service for our crosswords application.
+        com: docker build -t 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD` -f applications/monitor/Dockerfile applications/monitor
+
+      - cap: Setup the proxy in order to push the monitoring docker image to our cluster's registry
+        com: docker stop socat-registry; docker rm socat-registry; docker run -d -e "REGIP=`minikube ip`" --name socat-registry -p 30400:5000 chadmoon/socat:latest bash -c "socat TCP4-LISTEN:5000,fork,reuseaddr TCP4:`minikube ip`:30400"
+
+      - cap: Push the image
+        com: docker push 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD`
+
+      - cap: Stop the registry proxy
+        com: docker stop socat-registry
+      
+      - cap: Verify that the image is in our local registry using the registry-ui
+        com: minikube service registry-ui
+
+      - cap: Create the deployment and service for the monitoring and scaling server and wait for it to be deployed
+        com: sed 's#127.0.0.1:30400/monitor-scale:latest#127.0.0.1:30400/monitor-scale:'`git rev-parse --short HEAD`'#' applications/monitor/k8s/monitor-scale.yaml | kubectl apply -f -
+      
+      - cap: Wait for the deployment to run
+        com: kubectl rollout status deployment/monitor-scale
+
+      - cap: See the montior-scale-* pod running using kubectl.
+        com: kubectl get pods
+
+      - cap: See the montior-scale-* service is setup using kubectl.
+        com: kubectl get services
+
+      - cap: See the montior-scale-* ingress is configured using kubectl.
+        com: kubectl get ingress
+
+      - cap: See the monitor-scale deployment is setup using kubectl
+        com: kubectl get deployments
+
+      - cap: Now we will bootstrap the crossword/mongodb services, creating a docker image and storing it in the local registry. This script runs the same steps as before for a different service application.
+        com: scripts/server.sh
+
+      - cap: Check to see if services has been deployed
+        com: kubectl rollout status deployment/services
+
+      - cap: Bootstrap the frontend web application.  This script follows the same steps as before but 
+        com: scripts/pages.sh
+
+      - cap: Check to see if the front end has been deployed
+        com: kubectl rollout status deployment/kr8sswordz
+
+      - cap: See all the pods running using kubectl.
+        com: kubectl get pods
+
+      - cap: Start the web application in your default browser
+        com: minikube service kr8sswordz

@@ -8,7 +8,7 @@ markdown = markdown + "\n\n## Interactive tutorial version"
 markdown = markdown + "\n* clone this repo\n"
 markdown = markdown + "\n* Ensure you are starting with a clean slate: `minikube delete; minikube rm -rf ~/.minikube; rm -rf ~/.kube`\n"
 markdown = markdown + "\n* run `npm install`\n"
-markdown = markdown + "\nBegin the tutorial `npm start`"
+markdown = markdown + "\nBegin the desired section `npm run part1` `npm run part2` `npm run part3`"
 markdown = markdown + "\n\n## Manual tutorial version\n\n"
 
 YAML.load('steps.yml', function(docs)

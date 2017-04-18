@@ -10,7 +10,7 @@ module.exports = function(app) {
       console.log("Found " + crosswords.length + " existing crosswords");
       if(!crosswords.length) {
         app.models.Crossword.create({
-          fromCache: true,
+          fromCache: false,
           words: words,
         }, function (err, crossword) {
           if (err) throw err;

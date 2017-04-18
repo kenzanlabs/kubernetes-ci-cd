@@ -20,7 +20,7 @@ export default function puzzleReducer (state = initialState, action) {
     }
     case types.puzzle.SUBMIT_PUZZLE_DATA_SUCCESS: {
       return Object.assign({}, state, {
-        puzzleData: action.data.words
+        puzzleData: action.data
       });
     }
     case types.puzzle.SUBMIT_PUZZLE_DATA_FAILURE: {

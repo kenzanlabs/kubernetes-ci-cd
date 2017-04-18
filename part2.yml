@@ -1,0 +1,38 @@
+parts:
+
+  - name: Part 2
+    intro: In this part we will Setup Jenkins, and setup an automated job to build, push and deploy our custom appliction.
+    steps:
+
+      - cap: Install Jenkins
+        com: kubectl apply -f manifests/jenkins.yml; kubectl rollout status deployment/jenkins
+
+      - cap: Open the Jenkins service running in our cluster.  You will retrieve the admin password in the next step.
+        com: minikube service jenkins
+
+      - cap: Get Jenkins admin password with the following command.
+        com: kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /root/.jenkins/secrets/initialAdminPassword
+
+      - cap: Enter the password above into the Jenkins page and choose to install the suggested plugins.
+        com: echo 'Enter the password above into the Jenkins page and choose to install the suggested plugins.' 
+
+      - cap: Create an admin user when prompted in Jenkins (or click the skip link in the lower right).
+        com: echo 'Create an admin user when prompted in Jenkins (or click the skip link in the lower right).'
+
+      - cap: Click "New Item" and create an item with a name like "Hello-Kenzan Pipeline", choosing the type "Pipeline". Click OK.
+        com: echo 'Click "New Item" and create an item with a name like "Hello-Kenzan Pipeline", choosing the type "Pipeline". Click OK.'
+
+      - cap: From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM". 
+        com: echo 'From pipeline configuration, scroll down to Pipeline and change the Definition selection from "Pipeline script" to "Pipeline script from SCM".'
+
+      - cap: Set the SCM property to GIT. 
+        com: echo 'Set the SCM property to GIT.'
+
+      - cap: Fork the kenzanlabs repository in github and set the "Repository URL" to your fork, such as https://github.com/kenzanlabs/kubernetes-ci-cd.git. Save and run the job.
+        com: echo 'Fork the kenzanlabs repository in github and set the "Repository URL" to your fork, such as https://github.com/kenzanlabs/kubernetes-ci-cd.git. Save and run the job.'
+
+      - cap: View updated application
+        com: minikube service hello-kenzan
+
+      - cap: Push a change to your fork. Run job again. View changes
+        com: minikube service hello-kenzan

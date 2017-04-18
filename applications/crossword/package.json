@@ -15,6 +15,7 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^4.0.0",
     "loopback-connector-mongodb": "^3.0.1",
+    "node-etcd": "^5.0.3",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
     "toastr": "^2.1.2"
