@@ -27,6 +27,47 @@ spec:
 ---
 
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+  namespace: default
+automountServiceAccountToken: true
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: Jenkins-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: jenkins
+  namespace: default
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: kubectl-jenkins-context
+data:
+  kubectl-config-context.sh: |-
+    #!/bin/bash -v
+
+    kubectl config set-credentials jenkins --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+    kubectl config set-cluster minikube --server="https://192.168.99.100:8443" --certificate-authority="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    kubectl config set-context jenkins-minikube --cluster=minikube --user=jenkins --namespace=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+    kubectl config use-context jenkins-minikube
+    cat ~/.kube/config
+
+---
+
+apiVersion: v1
 kind: Service
 metadata:
   name: jenkins
@@ -58,12 +99,30 @@ spec:
         app: jenkins
         tier: jenkins
     spec:
+      serviceAccount: jenkins
+      initContainers:
+      - image: lachlanevenson/k8s-kubectl:v1.11.2
+        name: kubectl-config
+        command:
+        - "sh"
+        - "/kubectl-config-context.sh"
+        volumeMounts:
+        - name: kube-config
+          mountPath: "~/.kube"
+        - name: kubectl-jenkins-context
+          mountPath: "/kubectl-config-context.sh"
+          subPath: "kubectl-config-context.sh"
       containers:
       - image: 127.0.0.1:30400/jenkins:latest
         name: jenkins
         securityContext:
           privileged: true
         volumeMounts:
+        - name: kubectl-jenkins-context
+          mountPath: "/kubectl-config-context.sh"
+          subPath: "kubectl-config-context.sh"
+        - name: kube-config
+          mountPath: "/var/jenkins_home/.kube"
         - name: docker
           mountPath: /var/run/docker.sock
         - name: jenkins-persistent-storage
@@ -72,6 +131,14 @@ spec:
         - containerPort: 8080
           name: jenkins
       volumes:
+      - name: kubectl-jenkins-context
+        configMap:
+          name: kubectl-jenkins-context
+          items:
+          - key: kubectl-config-context.sh
+            path: kubectl-config-context.sh
+      - name: kube-config
+        emptyDir: {}
       - name: docker
         hostPath:
           path: /var/run/docker.sock

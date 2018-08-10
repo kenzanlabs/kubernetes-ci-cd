@@ -7,9 +7,9 @@ add-apt-repository  "deb [arch=amd64] https://download.docker.com/linux/debian  
 apt-get update && apt-get install docker-ce -y
 
 #Installing kubectl from Docker
-#RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -;\
-#touch /etc/apt/sources.list.d/kubernetes.list;\
-#echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list;\
-#apt-get update && apt-get install -y kubectl
+RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -;\
+touch /etc/apt/sources.list.d/kubernetes.list;\
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list;\
+apt-get update && apt-get install -y kubectl
 
 USER jenkins
